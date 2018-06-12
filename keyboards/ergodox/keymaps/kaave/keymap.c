@@ -8,6 +8,8 @@
 #define BASE 0 // default layer
 #define SYMB 1 // symbols
 
+#define MACRO_EJS 1
+
 /* BASIC KEYBOARD
  *
  */
@@ -32,7 +34,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *   |      |      |      |      |      |                                       |      |      |      |      |      |
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,-------------.
- *                                        | BKSP |  DEL |       | DEL  | BKSP |
+ *                                        | MEJS |  DEL |       | DEL  | BKSP |
  *                                 ,------|------|------|       |------+------+------.
  *                                 |      |      | HOME |       | PGUP |      |      |
  *                                 | Space| ENTER|------|       |------|ENTER |Space |
@@ -48,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTRL, KC_A,     KC_S,    KC_D,     KC_F,     KC_G,
         KC_LSFT,  KC_Z,     KC_X,    KC_C,     KC_V,     KC_B,    KC_GRV,
         KC_LALT,  KC_LCTRL, KC_LALT, MO(SYMB), KC_LGUI,
-                                                       KC_BSPC, KC_DELT,
+                                                       M(MACRO_EJS), KC_DELT,
                                                                 KC_HOME,
                                               KC_SPC,  KC_ENT,  KC_END,
 
@@ -115,16 +117,24 @@ const uint16_t PROGMEM fn_actions[] = {
 
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
-  // MACRODOWN only works in this function
-      switch(id) {
+    // MACRODOWN only works in this function
+    switch(id) {
         case 0:
-        if (record->event.pressed) {
-          register_code(KC_RSFT);
-        } else {
-          unregister_code(KC_RSFT);
-        }
-        break;
-      }
+            if (record->event.pressed) {
+                register_code(KC_RSFT);
+            } else {
+                unregister_code(KC_RSFT);
+            }
+
+            break;
+
+        case MACRO_EJS:
+            if (record->event.pressed) {
+                return MACRO(D(LSFT), T(COMM), T(5), T(SPC), T(5), T(DOT), U(LSFT), END);
+            }
+
+            break;
+    }
     return MACRO_NONE;
 };
 
